@@ -238,6 +238,18 @@ public class DatacenterBroker extends SimEntity {
 
 		incrementVmsAcks();
 
+		//submit cloudlets continously
+		//otherwise cloudlets are only submitted
+		//after all VMs are started. 
+		ArrayList<Cloudlet> toSubmit = new ArrayList<Cloudlet>();
+		for(Vm vm : getVmsCreatedList()) {
+			for(Cloudlet cl : getCloudletList()) {
+				 if(cl.getVmId() == vm.getId())
+					 toSubmit.add(cl);
+			}
+		}
+		submitCloudlets(toSubmit);
+		
 		// all the requested VMs have been created
 		if (getVmsCreatedList().size() == getVmList().size() - getVmsDestroyed()) {
 			submitCloudlets();
@@ -327,9 +339,10 @@ public class DatacenterBroker extends SimEntity {
 		String datacenterName = CloudSim.getEntityName(datacenterId);
 		for (Vm vm : getVmList()) {
 			if (!getVmsToDatacentersMap().containsKey(vm.getId())) {
+				int delay = vm.getStartDelay();
 				Log.printLine(CloudSim.clock() + ": " + getName() + ": Trying to Create VM #" + vm.getId()
-						+ " in " + datacenterName);
-				sendNow(datacenterId, CloudSimTags.VM_CREATE_ACK, vm);
+						+ " in " + datacenterName + " ,delay: " + delay);
+				send(datacenterId, delay, CloudSimTags.VM_CREATE_ACK, vm);
 				requestedVms++;
 			}
 		}
@@ -339,6 +352,10 @@ public class DatacenterBroker extends SimEntity {
 		setVmsRequested(requestedVms);
 		setVmsAcks(0);
 	}
+	
+	protected void submitCloudlets() {
+		submitCloudlets(getCloudletList());
+	}
 
 	/**
 	 * Submit cloudlets to the created VMs.
@@ -347,10 +364,10 @@ public class DatacenterBroker extends SimEntity {
 	 * @post $none
          * @see #submitCloudletList(java.util.List) 
 	 */
-	protected void submitCloudlets() {
+	protected void submitCloudlets(List<Cloudlet> cloudlets) {
 		int vmIndex = 0;
 		List<Cloudlet> successfullySubmitted = new ArrayList<Cloudlet>();
-		for (Cloudlet cloudlet : getCloudletList()) {
+		for (Cloudlet cloudlet : cloudlets) {
 			Vm vm;
 			// if user didn't bind this cloudlet and it has not been executed yet
 			if (cloudlet.getVmId() == -1) {

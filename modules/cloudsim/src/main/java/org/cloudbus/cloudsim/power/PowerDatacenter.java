@@ -230,7 +230,7 @@ public class PowerDatacenter extends Datacenter {
 
 		checkCloudletCompletion();
 
-		/** Remove completed VMs **/
+		/* Remove completed VMs */
 		for (PowerHost host : this.<PowerHost> getHostList()) {
 			for (Vm vm : host.getCompletedVms()) {
 				getVmAllocationPolicy().deallocateHostForVm(vm);

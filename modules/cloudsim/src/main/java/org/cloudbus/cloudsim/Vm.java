@@ -33,6 +33,12 @@ public class Vm {
 
 	/** The size the VM image size (the amount of storage it will use, at least initially). */
 	private long size;
+	
+	/** The delay with which the VM should be started*/
+	private int startDelay;
+	
+	/** End Time for this VM */
+	private double endTime;
 
 	/** The MIPS capacity of each VM's PE. */
 	private double mips;
@@ -412,6 +418,38 @@ public class Vm {
 	}
 
 	/**
+	 * Gets the start delay. 
+	 * 
+	 * @return start delay
+	 * @pre $none
+	 * @post $none
+	 */
+	public int getStartDelay() {
+		return this.startDelay;
+	}
+	
+
+	public double getEndTime() {
+		return this.endTime;
+	}
+	
+	public void setEndTime(double endTime) {
+		this.endTime = endTime;
+	}
+
+	
+	/**
+	 * Sets the start delay. 
+	 * 
+	 * @param startDelay
+	 * @pre startDelay >= 0
+	 * @post $none
+	 */
+	public void setStartDelay(int startDelay) {
+		this.startDelay = startDelay;
+	}
+	
+	/**
 	 * Gets the VMM.
 	 * 
 	 * @return VMM
@@ -614,5 +652,4 @@ public class Vm {
 		}
 		getStateHistory().add(newState);
 	}
-
 }
